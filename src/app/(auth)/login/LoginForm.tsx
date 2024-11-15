@@ -8,11 +8,14 @@ import {
 } from "@nextui-org/react";
 import React from "react";
 import { GiPadlock } from "react-icons/gi";
+import { useForm, SubmitHandler } from "react-hook-form"
 
 
 export default function LoginForm() {
-
-
+  const { register, handleSubmit, formState: { isValid, errors } } = useForm();
+  const onSubmit: SubmitHandler<any> = (data) => {
+    console.log("Form submitted", data);
+  };
   return (
     <Card className="w-2/5 mx-auto">
       <CardHeader className="flex flex-col items-center justify-center">
@@ -29,25 +32,34 @@ export default function LoginForm() {
         </div>
       </CardHeader>
       <CardBody>
-        <form >
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
             <Input
               defaultValue=""
               label="Email"
               variant="bordered"
+              {...register("Email", { required: 'Email is required' })}
+              isInvalid={!!errors.Email} //!! is the double negation operator. It's used to convert a value to a boolean.
+              errorMessage={errors.Email?.message as string}
             />
             <Input
               defaultValue=""
               label="Password"
               variant="bordered"
               type="password"
+              {...register("Password", {
+                required: 'Password is required',
+                minLength: { value: 8, message: "password must be at least 8 characters long" }
+              })}
+              isInvalid={!!errors.Password}
+              errorMessage={errors.Password?.message as string}
 
             />
             <Button
               fullWidth
               color="default"
               type="submit"
-
+              isDisabled={!isValid}
             >
               Login
             </Button>
